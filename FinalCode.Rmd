@@ -1,0 +1,19 @@
+---
+title: "FinalCode"
+author: "Mary Holtam"
+output: html_document
+date: "2025-06-08"
+---
+
+Link to GitHub repository: https://github.com/meholtam/ENVS-193DS_spring-2025_final.git
+
+```{r set up, message=FALSE, warning=FALSE}
+#making sure no messages show when loading in packages
+library(tidyverse)
+library(here)
+library(gt)
+library(ggplot2)
+library(readxl)
+```
+
+Problem 1: Research Writing 
