@@ -14,6 +14,7 @@ library(here)
 library(gt)
 library(ggplot2)
 library(readxl)
+library(dplyr)
 sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in my data
 ```
 
@@ -32,9 +33,21 @@ Statement 2- Each source measured contributed a different average nitrogen load 
 
 Problem 2: Data Visualization
 
+```{r cleaning data}
+sst_clean <- sst |>  # cleaning sst data
+  mutate(
+    year = factor(year(date), levels = c("2018", "2019", "2020", "2021", "2022", "2023")),  # comma after year(date)
+    month = month(date, label = TRUE, abbr = TRUE)  # comma was missing, but this is last argument so no comma needed here
+  ) |>
+  filter(year %in% c("2018", "2019", "2020", "2021", "2022", "2023")) |>  # filter years of interest
+  group_by(year, month) |>  # groups data by year and month
+  summarize(mean_monthly_sst = mean(temp, na.rm = TRUE), .groups = "drop")  # calculates mean SST per month
 
+sst_clean |> slice_sample(n = 5)
 
+str(sst_clean)
 
+```
 
 
 
