@@ -1,5 +1,5 @@
 ---
-title: "FinalCode"
+title: "Mary Holtam Final"
 author: "Mary Holtam"
 output: html_document
 date: "2025-06-08"
@@ -15,9 +15,16 @@ library(gt)
 library(ggplot2)
 library(readxl)
 library(dplyr)
+library(DHARMa)
+library(lubridate)
+library(janitor)
 sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in my data
 nest_boxes <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/occdist.csv")
 ```
+```{r}
+install.packages("DHARMa", type = "source", dependencies = TRUE)
+```
+
 
 Problem 1: Research Writing 
 
@@ -28,9 +35,9 @@ b) More information needed
 A piece of information from the ANOVA test that would provide greater context for the results would be the effect size. This would help demonstrate what proportion of variance in nitrogen load each source type provides. A second helpful piece of information would be the group mean for each source, which would provide the average nitrogen load that each source contributes. This would allow readers to understand which sources, from urban land to grasslands, cause the greatest amount of pollution. 
 
 c) Suggestions for rewriting
-Statement 1- We found that total nitrogen load (kg year-1) increased as distance from the headwater (km) decreased, suggesting that upstream locations supply more nitrogen input. (Correlation test: r= correlation coefficient, p= 0.03, α = significance level, distribution name). 
+Statement 1- We found that total nitrogen load (kg year-1) increased as distance from the headwater (km) decreased, suggesting that upstream locations supply more nitrogen input. (Correlation test: r= correlation coefficient, p= 0.03, α = significance level, n= sample size). 
 
-Statement 2- Each source measured contributed a different average nitrogen load (kg year-1), with urban land, fertilizer, and wastewater treatment contributing significantly more nitrogen than atmospheric deposition and grassland sources. (One-Way ANOVA: F(df1, df2) = F-statistic, p = 0.02, α = [significance level], distribution = F-distribution). 
+Statement 2- Each source measured contributed a different average nitrogen load (kg year-1), with urban land, fertilizer, and wastewater treatment contributing significantly more nitrogen than atmospheric deposition and grassland sources. (One-Way ANOVA: F(df1, df2) = F-statistic, p = 0.02, α = [significance level], distribution = F-distribution, n= sample size). 
 
 Problem 2: Data Visualization
 
@@ -42,7 +49,7 @@ sst_clean <- sst |>  # cleaning sst data
   ) |>
   filter(year %in% c("2018", "2019", "2020", "2021", "2022", "2023")) |>  # filter years of interest
   group_by(year, month) |>  # groups data by year and month
-  summarize(mean_monthly_sst = mean(temp, na.rm = TRUE), .groups = "drop")  # calculates mean SST per month
+  summarize(mean_monthly_sst = round(mean(temp, na.rm = TRUE), 1), .groups = "drop")  # calculates mean SST per month
 
 sst_clean |> slice_sample(n = 5)
 
@@ -95,16 +102,137 @@ c) Difference in "seasons"
 The two years that are referred to as seasons are 2016 and 2019. The main difference between these years in the context of this study is that in 2016 the boxes were newly deployed where in 2019 they had been established and present for three years. 
 
 d) Table of models
+ Model number | Season | Distance to forest edge | Model Description                             |       
+|:------------:|:------:|:-----------------------:|:---------------------------------------------:|
+| 0            |No      |No                       |no predictors(null model)                      |
+| 1            |Yes     |Yes                      |all predictors(saturdated model)               |
+| 2            |Yes     |No                       |GLM:Predictor variable=season                  |
+| 3            |No      |Yes                      |GLM:Predictor variable=distance to forest edge |
+
 
 e) Run the models
+```{r cleaning data}
+nest_boxes_clean <- nest_boxes |> 
+  clean_names()
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+# model 0: null model
+model0 <- glm( #using GLM
+  sp ~ 1, # formula, null so using no predictor
+  data = nest_boxes_clean, # data frame
+  family = binomial 
+)
+
+# model 1: all predictors/saturated
+model1 <- glm(
+  sp ~ season * edge_distance, # formula using season and edge distance as predictors
+  data = nest_boxes_clean, # data frame
+  family = binomial
+)
+
+# model 2: season
+model2 <- glm(
+  sp ~ season, # formula using season as predictor
+  data = nest_boxes_clean, #data frame
+  family = binomial
+)
+
+# model 3: distance to forest edge
+model3 <- glm(
+  sp ~ edge_distance, # formula using edge distance as predictor
+  data = nest_boxes_clean, #data frame
+  family = binomial
+)
+
+```
+
 
 f) Check the diagnostics
+```{r model 0}
+#model 0 diagnostics: 
+res0 <- simulateResiduals(model0)
+plot(res0)
+
+```
+
+```{r model 1}
+#model 1 diagnostics
+res1 <- simulateResiduals(model1)
+plot(res1)
+
+```
+
+```{r model 2}
+#model 2 diagnostics
+res2 <- simulateResiduals(model2)
+plot(res2)
+
+```
+
+```{r model 3}
+#model 3 diagnostics
+res3 <- simulateResiduals(model3)
+plot(res3)
+```
+
 
 g) Select the best model
+The best model can be described by the Akaike's Information Crierion, or AIC. Looking at this, the best model would be Model 1, which looks at edge distance and season as predictors, as the AIC is 227.0325. The response variable for Model 1 is occupancy of the swift parrot. Therefore, looking at both edge distance and season is the best way to determine the occupancy of the swift parrot in the nest boxes. 
+
+
+```{r model-selection}
+AICc(model1, #using AIC to run model selection
+     model2,
+     model3,
+     model0)|> 
+  # arranging output in descending order of AIC
+  arrange(AICc)
+```
+
 
 h) Visualize the model predictions
+```{r visualize model prediction}
+mod_pres <- ggpredict(model1, terms = c("edge_distance, [0:1100 by=10]", "season"))
+ggplot(nest_boxes_clean, # creates base ggplot object using clean data
+       aes(x = edge_distance, 
+           y = sp)) + # sets aesthetic so that x is equal to the distance from forest edge and y is equal to the species presence
+  geom_point(size = 3, # makes points larger than default
+             alpha = 0.4, # makes points semi-transparent
+             color = "#40E0D0") + # making point color turquoise
+  geom_ribbon(data = mod_preds, # adds confidence ribbon using model prediction data 
+              aes(x = x, 
+                  y = predicted, # maps predicted values and the bounds of their confidence 
+                  ymin = conf.low, 
+                  ymax - conf.high),
+              fill= "#8B8B00", alpha = 0.3) + # makes ribbon yellow-green and translucent
+  geom_line(data = mod_preds,
+            aes(x = x,
+                y = predicted),
+            color = "#5008B8", size = 1.2) + # creating a purple line
+scale_y_continuous(
+  name = "Probability of Swift Parrot Occupancy in Nest Boxes", # Naming y-axis label in full 
+  limits = c(0,1),
+  breaks = c(0,1) +
+    scale_x_continuous(
+      name = "Distance from Forest Edge" # naming x-axis label in full 
+    ) +
+    theme_minimal(base_size = 14) +
+    theme(
+      panel.grid = element_blank(), # Remove all gridlines
+      axis.title = element_text(face = "bold"),
+      legend.position = "none"
+    ))
+```
+ANNOTATE CODE!!!
+
 
 i) Write a caption for your figure
+
+Figure 1.
+
+
+
 
 j) Calculate model predictions
 
