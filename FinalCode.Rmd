@@ -195,36 +195,39 @@ AICc(model1, #using AIC to run model selection
 
 h) Visualize the model predictions
 ```{r visualize model prediction}
-model1 <- ggpredict(model1, terms = c("edge_distance, [0:1100 by=10]", "season"))
+#make predictions using ggpredict for both predictions and their interactions
+mod_preds <- ggpredict(model1, terms = c("edge_distance [0:1100 by=10]", "season"))
+
 ggplot(nest_boxes_clean, # creates base ggplot object using clean data
-       aes(x = edge_distance, 
-           y = sp)) + # sets aesthetic so that x is equal to the distance from forest edge and y is equal to the species presence
-  geom_point(size = 3, # makes points larger than default
+       aes(x = edge_distance, #x acis is edge distance
+           y = sp )) + #y axis is sp occupancy
+  geom_point(size = 2.5, # makes points larger than default
              alpha = 0.4, # makes points semi-transparent
              color = "#40E0D0") + # making point color turquoise
-  geom_ribbon(data = model1, # adds confidence ribbon using model prediction data 
+  geom_ribbon(data = mod_preds, # adds confidence ribbon using model prediction data 
               aes(x = x, 
-                  y = predicted, # maps predicted values and the bounds of their confidence 
-                  ymin = conf.low, 
-                  ymax - conf.high),
-              fill= "#8B8B00", alpha = 0.3) + # makes ribbon yellow-green and translucent
-  geom_line(data = model1, # adds prediction line
-            aes(x = x,
-                y = predicted),
-            color = "#5008B8", size = 1.2) + # makes line purple and thicker than default
-scale_y_continuous(
-  name = "Probability of Swift Parrot Occupancy in Nest Boxes", # Naming y-axis label in full 
-  limits = c(0,1), # fixes axis from 0 to 1 
-  breaks = c(0,1) + # only shows tick marks at 0 and 1
-    scale_x_continuous(
-      name = "Distance from Forest Edge" # naming x-axis label in full 
-    ) +
-    theme_minimal(base_size = 14) + # applies minimal theme and sets base font size to 14 to make it easier to read
-    theme(
-      panel.grid = element_blank(), # Remove all gridlines
-      axis.title = element_text(face = "bold"), # makes axis titles bold
-      legend.position = "none" # hides legend 
-    ))
+              ymin = conf.low, # confidence interval low boundary
+              ymax = conf.high, # confidence interval high boundary
+              y = predicted,
+              fill = group),
+              inherit.aes = FALSE, # adds prediction line
+              alpha = 0.3) +
+geom_line(data = mod_preds,
+          aes(x = x,
+              y = predicted,
+              color = group)) +
+  scale_y_continuous(name = "Probability of Swift Parrot Occupancy in Nest Boxes", # naming y-axis label in full 
+    limits = c(0,1), breaks = c(0,1)) + # only shows tick marks at 0 and 1 
+  scale_x_continuous(name = "Distance from Forest Edge (m)") + # adding x axis label in full
+  scale_fill_manual(values = c("2016" = "#5008B8", "2019" = "#8B8B00")) + # manually changing fill color
+scale_color_manual(values = c("2016" = "#5008B8", "2019" = "#8B8B00"))+ # manually changing line color
+theme(
+  panel.grid = element_blank(), # remove all grid lines
+  axis.title = element_text(size = 12), # make axis labels more clear
+  legend.title = element_blank(), # make legend more clear
+  legend.position = "right" # move legend to the right
+)
+        
 ```
 
 
@@ -244,6 +247,7 @@ print(predictions)
 
 
 k) Interpret your results
+In 2016, there was a predicted 54% probability [CI: 0.36, 0.72] of swift parrot occupancy in nest boxes 0 meters from the forest edge. There was only a 9% predicted probability [CI: 0.04, 0.22] of swift parrot occupancy in nest boxes 900 meters from the forest edge. In 2019, there was a 24% predicted probability [CI: 0.13, 0.42] of swift parrot occupancy in nest boxes 0 meters from the forest edge and a 9% predicted probability [CI: 0.03, 0.23] of swift parrot occupancy in nest boxes 0 meters from the forest edge. The relationship between distance from forest edge and probability of occupancy was inversely proportional. As distance from forest edge increased, predicted probability of occupancy decreased. This is explained by the fact that the swift parrot's two main competitors occupied both niches of being close and far from the forest edge and outcompeted the swift parrot. The Common Starling more frequently occupied the boxes close to the forest edge and the Tree Martin occupied boxes farther, both creating competition for the Swift Parrot. The predicted probability of occupancy of Swift Parrots in the boxes decreased as time went on because the boxes became more established and competition for suitable nesting sites increased, leading the parrots to seek alternative habitats.
 
 Problem 4: Affective and exploratory visualizations
 
