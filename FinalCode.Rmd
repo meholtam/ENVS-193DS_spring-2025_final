@@ -206,22 +206,22 @@ ggplot(nest_boxes_clean, # creates base ggplot object using clean data
                   ymin = conf.low, 
                   ymax - conf.high),
               fill= "#8B8B00", alpha = 0.3) + # makes ribbon yellow-green and translucent
-  geom_line(data = mod_preds,
+  geom_line(data = mod_preds, # adds prediction line
             aes(x = x,
                 y = predicted),
-            color = "#5008B8", size = 1.2) + # creating a purple line
+            color = "#5008B8", size = 1.2) + # makes line purple and thicker than default
 scale_y_continuous(
   name = "Probability of Swift Parrot Occupancy in Nest Boxes", # Naming y-axis label in full 
-  limits = c(0,1),
-  breaks = c(0,1) +
+  limits = c(0,1), # fixes axis from 0 to 1 
+  breaks = c(0,1) + # only shows tick marks at 0 and 1
     scale_x_continuous(
       name = "Distance from Forest Edge" # naming x-axis label in full 
     ) +
-    theme_minimal(base_size = 14) +
+    theme_minimal(base_size = 14) + # applies minimal theme and sets base font size to 14 to make it easier to read
     theme(
       panel.grid = element_blank(), # Remove all gridlines
-      axis.title = element_text(face = "bold"),
-      legend.position = "none"
+      axis.title = element_text(face = "bold"), # makes axis titles bold
+      legend.position = "none" # hides legend 
     ))
 ```
 ANNOTATE CODE!!!
