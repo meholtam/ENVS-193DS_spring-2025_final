@@ -1,13 +1,274 @@
 ---
-title: "FinalCode"
+title: "Mary Holtam Final"
 author: "Mary Holtam"
 output: html_document
+toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
 date: "2025-06-08"
 ---
 
 Link to GitHub repository: https://github.com/meholtam/ENVS-193DS_spring-2025_final.git
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r set up, message=FALSE, warning=FALSE}
+#making sure no messages show when loading in packages
+library(tidyverse) # loading in Tidyverse package 
+library(here) # loading in here package 
+library(gt) # loading in gt package 
+library(ggplot2) # loading in ggplot2 package 
+library(readxl) # loading in readxl package 
+library(dplyr) # loading in dplyr package 
+library(DHARMa) # loading in DHARMa package 
+library(lubridate) # loading in lubridate package 
+install.packages("MuMIn") # installing MuMInpackage 
+library(MuMIn) # loading in MuMIn package             
+install.packages("ggeffects") # installing ggeffects package 
+library(ggeffects) # loading in ggeffects package 
+library(janitor) # loading in janitor package 
+sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in sea surface temperature data
+nest_boxes <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/occdist.csv") # reading in nest box data
 ```
+
+
+ˆ
+Problem 1: Research Writing 
+
+a) Transparent statistical methods
+In part 1, my coworker used a Pearson correlation test. Because the results section details that the correlation between distance from head water and annual total nitrogen load was being measured, we know that a correlation test was being used. In part 2, the coworker used a one-way ANOVA test. Here, the average nitrogen load was measured across sources, including urban land, atmospheric deposition, fertilizer, wastewater treatment, and grasslands, which points to the use of an ANOVA test which looks at means across variables from unrelated groups.
+
+b) More information needed
+A piece of information from the ANOVA test that would provide greater context for the results would be the effect size. This would help demonstrate what proportion of variance in nitrogen load each source type provides. A second helpful piece of information would be the group mean for each source, which would provide the average nitrogen load that each source contributes. This would allow readers to understand which sources, from urban land to grasslands, cause the greatest amount of pollution. 
+
+c) Suggestions for rewriting
+Statement 1- We found that total nitrogen load (kg year-1) increased as distance from the headwater (km) decreased, suggesting that upstream locations supply more nitrogen input. (Correlation test: r= correlation coefficient, p= 0.03, α = significance level, n= sample size). 
+
+Statement 2- Each source measured contributed a different average nitrogen load (kg year-1), with urban land, fertilizer, and wastewater treatment contributing significantly more nitrogen than atmospheric deposition and grassland sources. (One-Way ANOVA: F(df1, df2) = F-statistic, p = 0.02, α = [significance level], distribution = F-distribution, n= sample size). 
+
+Problem 2: Data Visualization
+
+```{r cleaning data}
+sst_clean <- sst |>  # cleaning sst data
+  mutate(
+    year = factor(year(date), levels = c("2018", "2019", "2020", "2021", "2022", "2023")),  # comma after year(date)
+    month = month(date, label = TRUE, abbr = TRUE)  # comma was missing, but this is last argument so no comma needed here
+  ) |>
+  filter(year %in% c("2018", "2019", "2020", "2021", "2022", "2023")) |>  # filter years of interest
+  group_by(year, month) |>  # groups data by year and month
+  summarize(mean_monthly_sst = round(mean(temp, na.rm = TRUE), 1), .groups = "drop")  # calculates mean SST per month
+
+sst_clean |> slice_sample(n = 5) # randomly selects 5 rows from data frame
+
+str(sst_clean) # displays structure of sst_clean object
+
+```
+
+b. Visualize the data
+```{r line graph}
+ggplot(data = sst_clean, # sets the data frame
+       aes(x = month, # the x-axis should be date
+           y = mean_monthly_sst, # the y-axis should be total_rain
+           color = year, # color all geometries by water_year
+           group = year)) + # tell ggplot how to group the data for the lines  
+  geom_point() + # adding points
+  geom_line() + # adding lines
+  scale_color_manual(values = c(
+    "2018" = "cadetblue1",
+    "2019" = "skyblue",
+    "2020" = "dodgerblue",
+    "2021" = "royalblue",
+    "2022" ="mediumblue",
+    "2023" = "midnightblue"
+  )) + #changing the colors of each line to a blue gradient
+ theme(
+   panel.background = element_blank(), # Makes the panel background transparent/blank
+   panel.border = element_rect(color = "black", fill = NA, linewidth = 1), # add black border
+    axis.line = element_blank(), # Removes both x and y axis lines
+    plot.margin = margin(20, 20, 20, 20), # make it so graph does not get cut off
+    axis.ticks = element_blank(), # Removes all axis ticks
+    legend.position = c(0.05, 0.95), # move legend to the top left
+    legend.justification = c(0, 1), # move legend to top left
+    coord_cartesian(clip = "off") # prevent legend from being cut off
+  ) +
+  labs(x = "Month", # relabeling the x-axis
+       y = "Mean monthly sea surface temperature (°C)", # relabeling the y-axis
+       color = "Year") # relabeling the legend
+```
+
+
+Problem 3: Data Analysis
+
+a) Response variable
+In this data set, the 1s and 0s refer to whether a certain species is occupying the box, or if there is a different species/if the box is empty. The 1 in the sp column refers to the presence of a swift parrot and the 0 refers to it being occupied by a different species or being empty; the 1 in ths cs column refers to the common starling and the 0 refers to it being occupied by a different species or being empty; the 1 in the e column refers to it being unoccupied or empty and the 0 refers to it being occupied; and the 1 in the tm column refers to it being occupied by the tree martin and the 0 refers to another species.
+
+b) Purpose of study
+The target species for the nest boxes being studied in this paper is the swift parrot, where the common starling and the tree martin are non-target species that may be occupying the nest boxes. The common starling and tree martin are competitors of the swift parrot for this habitat and are the main beneficiaries of the boxes, so this study seeks to identify what factors cause greater occupancy of these competitors over the intended beneficiary, the swift parrot. 
+
+c) Difference in "seasons"
+The two years that are referred to as seasons are 2016 and 2019. The main difference between these years in the context of this study is that in 2016 the boxes were newly deployed where in 2019 they had been established and present for three years. 
+
+d) Table of models
+ Model number | Season | Distance to forest edge | Model Description                             |       
+|:------------:|:------:|:-----------------------:|:---------------------------------------------:|
+| 0            |No      |No                       |no predictors(null model)                      |
+| 1            |Yes     |Yes                      |all predictors(saturdated model)               |
+| 2            |Yes     |No                       |GLM:Predictor variable=season                  |
+| 3            |No      |Yes                      |GLM:Predictor variable=distance to forest edge |
+
+
+e) Run the models
+```{r cleaning data}
+nest_boxes_clean <- nest_boxes |> 
+  clean_names() # cleaning data
+```
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+# model 0: null model
+model0 <- glm( #using GLM
+  sp ~ 1, # formula, null so using no predictor
+  data = nest_boxes_clean, # data frame
+  family = binomial # tells R that response variable is binary
+)
+
+# model 1: all predictors/saturated
+model1 <- glm(
+  sp ~ season * edge_distance, # formula using season and edge distance as predictors
+  data = nest_boxes_clean, # data frame
+  family = binomial # tells R that response variable is binary
+)
+
+# model 2: season
+model2 <- glm(
+  sp ~ season, # formula using season as predictor
+  data = nest_boxes_clean, #data frame
+  family = binomial # tells R that response variable is binary
+)
+
+# model 3: distance to forest edge
+model3 <- glm(
+  sp ~ edge_distance, # formula using edge distance as predictor
+  data = nest_boxes_clean, #data frame
+  family = binomial # tells R that response variable is binary
+)
+
+```
+
+
+f) Check the diagnostics
+```{r model 0}
+#model 0 diagnostics: 
+res0 <- simulateResiduals(model0) # simulate residuals for model 0
+plot(res0) # stores simulated residuals in object called res0
+
+```
+
+```{r model 1}
+#model 1 diagnostics
+res1 <- simulateResiduals(model1) # simulate residuals for model 1
+plot(res1) # stores simulated residuals in object called res1
+
+```
+
+```{r model 2}
+#model 2 diagnostics
+res2 <- simulateResiduals(model2) # simulate residuals for model 2
+plot(res2) # stores simulated residuals in object called res2
+
+```
+
+```{r model 3}
+#model 3 diagnostics
+res3 <- simulateResiduals(model3) # simulate residuals for model 3
+plot(res3) # stores simulated residuals in object called res3
+```
+
+
+g) Select the best model
+The best model can be described by the Akaike's Information Crierion, or AIC. Looking at this, the best model would be Model 1, which looks at edge distance and season as predictors, as the AIC is 227.0325. The response variable for Model 1 is occupancy of the swift parrot. Therefore, looking at both edge distance and season is the best way to determine the occupancy of the swift parrot in the nest boxes. 
+
+
+```{r model-selection}
+AICc(model1, #using AIC to run model selection
+     model2,
+     model3,
+     model0)|> 
+  # arranging output in descending order of AIC
+  arrange(AICc)
+```
+
+
+h) Visualize the model predictions
+```{r visualize model prediction}
+#make predictions using ggpredict for both predictions and their interactions
+mod_preds <- ggpredict(model1, terms = c("edge_distance [0:1100 by=10]", "season"))
+
+ggplot(nest_boxes_clean, # creates base ggplot object using clean data
+       aes(x = edge_distance, #x acis is edge distance
+           y = sp )) + #y axis is sp occupancy
+  geom_point(size = 2.5, # makes points larger than default
+             alpha = 0.4, # makes points semi-transparent
+             color = "#40E0D0") + # making point color turquoise
+  geom_ribbon(data = mod_preds, # adds confidence ribbon using model prediction data 
+              aes(x = x, 
+              ymin = conf.low, # confidence interval low boundary
+              ymax = conf.high, # confidence interval high boundary
+              y = predicted,
+              fill = group),
+              inherit.aes = FALSE, # adds prediction line
+              alpha = 0.3) +
+geom_line(data = mod_preds,
+          aes(x = x,
+              y = predicted,
+              color = group)) +
+  scale_y_continuous(name = "Probability of Swift Parrot Occupancy in Nest Boxes", # naming y-axis label in full 
+    limits = c(0,1), breaks = c(0,1)) + # only shows tick marks at 0 and 1 
+  scale_x_continuous(name = "Distance from Forest Edge (m)") + # adding x axis label in full
+  scale_fill_manual(values = c("2016" = "#5008B8", "2019" = "#8B8B00")) + # manually changing fill color
+scale_color_manual(values = c("2016" = "#5008B8", "2019" = "#8B8B00"))+ # manually changing line color
+theme(
+  panel.grid = element_blank(), # remove all grid lines
+  axis.title = element_text(size = 12), # make axis labels more clear
+  legend.title = element_blank(), # make legend more clear
+  legend.position = "right" # move legend to the right
+)
+        
+```
+
+
+i) Write a caption for your figure
+
+Figure 1. Predicted Swift Parrot Nest Box Occupancy by Edge Distance and Year
+This figure conveys the observed versus predicted nest box occupancy of Swift Parrots in 2016 and 2019. The turquoise points represent the observed occupancy as a function of distance from forest edge. The lines are shaded by the 95% confidence interval to represent predicted occupancy in 2016, represented by the purple shading, and 2019, represented by the green shading. As shown in the model, the relationship between distance from forest edge and Swift Parrot occupancy is inversely proportional, with boxes placed farther from the forest edge relating to smaller likelihood of Swift Parrot occupancy throughout both seasons. It is also clear from the model that Swift Parrot occupancy in all boxes was less in 2019 than in 2016. 
+Data Citation: https://doi.org/10.5061/dryad.83bk3j9sb 
+
+
+
+j) Calculate model predictions
+```{r model predictions}
+predictions <- ggpredict(model1, #the predictions function saves the output for later use
+          terms = c("edge_distance [0,900]", "season")) 
+print(predictions)
+```
+
+
+k) Interpret your results
+In 2016, there was a predicted 54% probability [CI: 0.36, 0.72] of swift parrot occupancy in nest boxes 0 meters from the forest edge. There was only a 9% predicted probability [CI: 0.04, 0.22] of swift parrot occupancy in nest boxes 900 meters from the forest edge. In 2019, there was a 24% predicted probability [CI: 0.13, 0.42] of swift parrot occupancy in nest boxes 0 meters from the forest edge and a 9% predicted probability [CI: 0.03, 0.23] of swift parrot occupancy in nest boxes 0 meters from the forest edge. The relationship between distance from forest edge and probability of occupancy was inversely proportional. As distance from forest edge increased, predicted probability of occupancy decreased. This is explained by the fact that the swift parrot's two main competitors occupied both niches of being close and far from the forest edge and out competed the swift parrot. The Common Starling more frequently occupied the boxes close to the forest edge and the Tree Martin occupied boxes farther, both creating competition for the Swift Parrot. The predicted probability of occupancy of Swift Parrots in the boxes decreased as time went on because the boxes became more established and competition for suitable nesting sites increased, leading the parrots to seek alternative habitats.
+
+Problem 4: Affective and exploratory visualizations
+
+a) Comparing visualizations 
+In both Homework 2 and 3, I created visualizations to represent my personal data. In Homework 2, these consisted of exploratory visualizations, such as a box plot. Homework 3 focused on creating affective visualizations, such as the calendar I created representing my mean daily step count. These visualizations are different from each other in the way I represented my data as the box plot has a much more statistical approach, making distribution factors like spread and variation very clear for viewers. In order to understand the main point of this plot, viewers must have some prior knowledge about statistical plots and be able to interpret a box plot. On the other hand, my calendar only shows daily step count and anyone would be able to understand the point that the visualization is trying to make, even if they do not have knowledge of data science and plots. In both visualizations, the mean daily step count is represented and it is clear in both which day had the greatest amount of steps. The data is a bit different in my Homework 2 plots due to the fact that I did not have all of my data yet. However, in both the means are clear and the relationship between day of the week and mean step count is emphasized. The only reason the trend of which day has the greatest mean number of steps is different between visualizations is due to the difference in amount of data that was collected between Homeworks 2 and 3. The feedback I got from instructors was to improve my y-axis and geometry of my box plot, which I fixed and I believe having more data made the plot more clear and easy to understand. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
