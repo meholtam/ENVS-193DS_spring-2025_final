@@ -14,6 +14,7 @@ library(here)
 library(gt)
 library(ggplot2)
 library(readxl)
+sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in my data
 ```
 
 Problem 1: Research Writing 
@@ -23,6 +24,31 @@ In part 1, my coworker used a Pearson correlation test. Because the results sect
 
 b) More information needed
 A piece of information from the ANOVA test that would provide greater context for the results would be the effect size. This would help demonstrate what proportion of variance in nitrogen load each source type provides. A second helpful piece of information would be the group mean for each source, which would provide the average nitrogen load that each source contributes. This would allow readers to understand which sources, from urban land to grasslands, cause the greatest amount of pollution. 
+
+c) Suggestions for rewriting
+Statement 1- We found that total nitrogen load (kg year-1) increased as distance from the headwater (km) decreased, suggesting that upstream locations supply more nitrogen input. (Correlation test: r= correlation coefficient, p= 0.03, α = significance level, distribution name). 
+
+Statement 2- Each source measured contributed a different average nitrogen load (kg year-1), with urban land, fertilizer, and wastewater treatment contributing significantly more nitrogen than atmospheric deposition and grassland sources. (One-Way ANOVA: F(df1, df2) = F-statistic, p = 0.02, α = [significance level], distribution = F-distribution). 
+
+Problem 2: Data Visualization
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
