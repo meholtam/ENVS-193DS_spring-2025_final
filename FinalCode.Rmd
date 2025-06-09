@@ -49,8 +49,37 @@ str(sst_clean)
 
 ```
 
-
-
+b. Visualize the data
+```{r line graph}
+ggplot(data = sst_clean, # sets the data frame
+       aes(x = month, # the x-axis should be date
+           y = mean_monthly_sst, # the y-axis should be total_rain
+           color = year, # color all geometries by water_year
+           group = year)) + # tell ggplot how to group the data for the lines  
+  geom_point() + # adding points
+  geom_line() + # adding lines
+  scale_color_manual(values = c(
+    "2018" = "cadetblue1",
+    "2019" = "skyblue",
+    "2020" = "dodgerblue",
+    "2021" = "royalblue",
+    "2022" ="mediumblue",
+    "2023" = "midnightblue"
+  )) + #changing the colors of each line to a blue gradient
+ theme(
+   panel.background = element_blank(), # Makes the panel background transparent/blank
+   panel.border = element_rect(color = "black", fill = NA, size = 1), # add black border
+    axis.line = element_blank(), # Removes both x and y axis lines
+    plot.margin = margin(20, 10, 10, 20), # make it so graph does not get cut off
+    axis.ticks = element_blank(), # Removes all axis ticks
+    legend.position = c(0.95, 0.95), # move legend to the top left
+    legend.justification = c(1, 0), # move legend to top left
+    coord_cartesian(clip = "off") # prevent legend from being cut off
+  ) +
+  labs(x = "Month", # relabeling the x-axis
+       y = "Mean monthly sea surface temperature (°C)", # relabeling the y-axis
+       color = "Year") # relabeling the legend
+```
 
 
 
