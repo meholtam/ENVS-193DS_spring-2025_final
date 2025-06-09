@@ -96,6 +96,27 @@ The two years that are referred to as seasons are 2016 and 2019. The main differ
 
 d) Table of models
 
+e) Run the models
+
+f) Check the diagnostics
+
+g) Select the best model
+
+h) Visualize the model predictions
+
+i) Write a caption for your figure
+
+j) Calculate model predictions
+
+k) Interpret your results
+
+Problem 4: Affective and exploratory visualizations
+
+a) Comparing visualizations 
+
+
+
+
 
 
 
