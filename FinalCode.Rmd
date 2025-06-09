@@ -21,11 +21,9 @@ library(janitor)
 sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in my data
 nest_boxes <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/occdist.csv")
 ```
-```{r}
-install.packages("DHARMa", type = "source", dependencies = TRUE)
-```
 
 
+ˆ
 Problem 1: Research Writing 
 
 a) Transparent statistical methods
@@ -76,7 +74,7 @@ ggplot(data = sst_clean, # sets the data frame
   )) + #changing the colors of each line to a blue gradient
  theme(
    panel.background = element_blank(), # Makes the panel background transparent/blank
-   panel.border = element_rect(color = "black", fill = NA, size = 1), # add black border
+   panel.border = element_rect(color = "black", fill = NA, linewidth = 1), # add black border
     axis.line = element_blank(), # Removes both x and y axis lines
     plot.margin = margin(20, 20, 20, 20), # make it so graph does not get cut off
     axis.ticks = element_blank(), # Removes all axis ticks
@@ -224,7 +222,6 @@ scale_y_continuous(
       legend.position = "none" # hides legend 
     ))
 ```
-ANNOTATE CODE!!!
 
 
 i) Write a caption for your figure
