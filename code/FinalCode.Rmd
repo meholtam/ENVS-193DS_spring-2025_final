@@ -21,9 +21,7 @@ library(readxl) # loading in readxl package
 library(dplyr) # loading in dplyr package 
 library(DHARMa) # loading in DHARMa package 
 library(lubridate) # loading in lubridate package 
-install.packages("MuMIn") # installing MuMInpackage 
 library(MuMIn) # loading in MuMIn package             
-install.packages("ggeffects") # installing ggeffects package 
 library(ggeffects) # loading in ggeffects package 
 library(janitor) # loading in janitor package 
 sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in sea surface temperature data
@@ -47,7 +45,7 @@ Statement 2- Each source measured contributed a different average nitrogen load 
 
 Problem 2: Data Visualization
 
-```{r cleaning data}
+```{r cleaning data, message=FALSE, warning=FALSE}
 sst_clean <- sst |>  # cleaning sst data
   mutate(
     year = factor(year(date), levels = c("2018", "2019", "2020", "2021", "2022", "2023")),  # comma after year(date)
@@ -64,7 +62,7 @@ str(sst_clean) # displays structure of sst_clean object
 ```
 
 b. Visualize the data
-```{r line graph}
+```{r line graph, message=FALSE, warning=FALSE}
 ggplot(data = sst_clean, # sets the data frame
        aes(x = month, # the x-axis should be date
            y = mean_monthly_sst, # the y-axis should be total_rain
@@ -117,7 +115,7 @@ d) Table of models
 
 
 e) Run the models
-```{r cleaning data}
+```{r cleaning data, message=FALSE, warning=FALSE}
 nest_boxes_clean <- nest_boxes |> 
   clean_names() # cleaning data
 ```
@@ -187,7 +185,7 @@ g) Select the best model
 The best model can be described by the Akaike's Information Crierion, or AIC. Looking at this, the best model would be Model 1, which looks at edge distance and season as predictors, as the AIC is 227.0325. The response variable for Model 1 is occupancy of the swift parrot. Therefore, looking at both edge distance and season is the best way to determine the occupancy of the swift parrot in the nest boxes. 
 
 
-```{r model-selection}
+```{r model-selection, message=FALSE, warning=FALSE}
 AICc(model1, #using AIC to run model selection
      model2,
      model3,
@@ -198,7 +196,7 @@ AICc(model1, #using AIC to run model selection
 
 
 h) Visualize the model predictions
-```{r visualize model prediction}
+```{r visualize model prediction, message=FALSE, warning=FALSE}
 #make predictions using ggpredict for both predictions and their interactions
 mod_preds <- ggpredict(model1, terms = c("edge_distance [0:1100 by=10]", "season"))
 
@@ -244,7 +242,7 @@ Data Citation: https://doi.org/10.5061/dryad.83bk3j9sb
 
 
 j) Calculate model predictions
-```{r model predictions}
+```{r model predictions, message=FALSE, warning=FALSE}
 predictions <- ggpredict(model1, #the predictions function saves the output for later use
           terms = c("edge_distance [0,900]", "season")) 
 print(predictions)
