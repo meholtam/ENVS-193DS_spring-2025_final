@@ -17,3 +17,21 @@ library(readxl)
 ```
 
 Problem 1: Research Writing 
+
+a) Transparent statistical methods
+In part 1, my coworker used a Pearson correlation test. Because the results section details that the correlation between distance from head water and annual total nitrogen load was being measured, we know that a correlation test was being used. In part 2, the coworker used a one-way ANOVA test. Here, the average nitrogen load was measured across sources, including urban land, atmospheric deposition, fertilizer, wastewater treatment, and grasslands, which points to the use of an ANOVA test which looks at means across variables from unrelated groups.
+
+b) More information needed
+A piece of information from the ANOVA test that would provide greater context for the results would be the effect size. This would help demonstrate what proportion of variance in nitrogen load each source type provides. A second helpful piece of information would be the group mean for each source, which would provide the average nitrogen load that each source contributes. This would allow readers to understand which sources, from urban land to grasslands, cause the greatest amount of pollution. 
+
+
+
+
+
+
+
+
+
+
+
+
