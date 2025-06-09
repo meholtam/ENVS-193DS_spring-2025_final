@@ -9,21 +9,21 @@ Link to GitHub repository: https://github.com/meholtam/ENVS-193DS_spring-2025_fi
 
 ```{r set up, message=FALSE, warning=FALSE}
 #making sure no messages show when loading in packages
-library(tidyverse)
-library(here)
-library(gt)
-library(ggplot2)
-library(readxl)
-library(dplyr)
-library(DHARMa)
-library(lubridate)
-install.packages("MuMIn")  
-library(MuMIn)             
-install.packages("ggeffects")
-library(ggeffects)
-library(janitor)
-sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in my data
-nest_boxes <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/occdist.csv")
+library(tidyverse) # loading in Tidyverse package 
+library(here) # loading in here package 
+library(gt) # loading in gt package 
+library(ggplot2) # loading in ggplot2 package 
+library(readxl) # loading in readxl package 
+library(dplyr) # loading in dplyr package 
+library(DHARMa) # loading in DHARMa package 
+library(lubridate) # loading in lubridate package 
+install.packages("MuMIn") # installing MuMInpackage 
+library(MuMIn) # loading in MuMIn package             
+install.packages("ggeffects") # installing ggeffects package 
+library(ggeffects) # loading in ggeffects package 
+library(janitor) # loading in janitor package 
+sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in sea surface temperature data
+nest_boxes <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/occdist.csv") # reading in nest box data
 ```
 
 
@@ -53,9 +53,9 @@ sst_clean <- sst |>  # cleaning sst data
   group_by(year, month) |>  # groups data by year and month
   summarize(mean_monthly_sst = round(mean(temp, na.rm = TRUE), 1), .groups = "drop")  # calculates mean SST per month
 
-sst_clean |> slice_sample(n = 5)
+sst_clean |> slice_sample(n = 5) # randomly selects 5 rows from data frame
 
-str(sst_clean)
+str(sst_clean) # displays structure of sst_clean object
 
 ```
 
@@ -115,7 +115,7 @@ d) Table of models
 e) Run the models
 ```{r cleaning data}
 nest_boxes_clean <- nest_boxes |> 
-  clean_names()
+  clean_names() # cleaning data
 ```
 
 ```{r, results='hide', message=FALSE, warning=FALSE}
@@ -123,28 +123,28 @@ nest_boxes_clean <- nest_boxes |>
 model0 <- glm( #using GLM
   sp ~ 1, # formula, null so using no predictor
   data = nest_boxes_clean, # data frame
-  family = binomial 
+  family = binomial # tells R that response variable is binary
 )
 
 # model 1: all predictors/saturated
 model1 <- glm(
   sp ~ season * edge_distance, # formula using season and edge distance as predictors
   data = nest_boxes_clean, # data frame
-  family = binomial
+  family = binomial # tells R that response variable is binary
 )
 
 # model 2: season
 model2 <- glm(
   sp ~ season, # formula using season as predictor
   data = nest_boxes_clean, #data frame
-  family = binomial
+  family = binomial # tells R that response variable is binary
 )
 
 # model 3: distance to forest edge
 model3 <- glm(
   sp ~ edge_distance, # formula using edge distance as predictor
   data = nest_boxes_clean, #data frame
-  family = binomial
+  family = binomial # tells R that response variable is binary
 )
 
 ```
@@ -153,29 +153,29 @@ model3 <- glm(
 f) Check the diagnostics
 ```{r model 0}
 #model 0 diagnostics: 
-res0 <- simulateResiduals(model0)
-plot(res0)
+res0 <- simulateResiduals(model0) # simulate residuals for model 0
+plot(res0) # stores simulated residuals in object called res0
 
 ```
 
 ```{r model 1}
 #model 1 diagnostics
-res1 <- simulateResiduals(model1)
-plot(res1)
+res1 <- simulateResiduals(model1) # simulate residuals for model 1
+plot(res1) # stores simulated residuals in object called res1
 
 ```
 
 ```{r model 2}
 #model 2 diagnostics
-res2 <- simulateResiduals(model2)
-plot(res2)
+res2 <- simulateResiduals(model2) # simulate residuals for model 2
+plot(res2) # stores simulated residuals in object called res2
 
 ```
 
 ```{r model 3}
 #model 3 diagnostics
-res3 <- simulateResiduals(model3)
-plot(res3)
+res3 <- simulateResiduals(model3) # simulate residuals for model 3
+plot(res3) # stores simulated residuals in object called res3
 ```
 
 
