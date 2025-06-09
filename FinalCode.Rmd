@@ -17,6 +17,10 @@ library(readxl)
 library(dplyr)
 library(DHARMa)
 library(lubridate)
+install.packages("MuMIn")  
+library(MuMIn)             
+install.packages("ggeffects")
+library(ggeffects)
 library(janitor)
 sst <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/sst.csv") # reading in my data
 nest_boxes <- read_csv("~/Desktop/ENVS-193DS/ENVS-193DS_spring-2025_final/data/occdist.csv")
@@ -191,20 +195,20 @@ AICc(model1, #using AIC to run model selection
 
 h) Visualize the model predictions
 ```{r visualize model prediction}
-mod_pres <- ggpredict(model1, terms = c("edge_distance, [0:1100 by=10]", "season"))
+model1 <- ggpredict(model1, terms = c("edge_distance, [0:1100 by=10]", "season"))
 ggplot(nest_boxes_clean, # creates base ggplot object using clean data
        aes(x = edge_distance, 
            y = sp)) + # sets aesthetic so that x is equal to the distance from forest edge and y is equal to the species presence
   geom_point(size = 3, # makes points larger than default
              alpha = 0.4, # makes points semi-transparent
              color = "#40E0D0") + # making point color turquoise
-  geom_ribbon(data = mod_preds, # adds confidence ribbon using model prediction data 
+  geom_ribbon(data = model1, # adds confidence ribbon using model prediction data 
               aes(x = x, 
                   y = predicted, # maps predicted values and the bounds of their confidence 
                   ymin = conf.low, 
                   ymax - conf.high),
               fill= "#8B8B00", alpha = 0.3) + # makes ribbon yellow-green and translucent
-  geom_line(data = mod_preds, # adds prediction line
+  geom_line(data = model1, # adds prediction line
             aes(x = x,
                 y = predicted),
             color = "#5008B8", size = 1.2) + # makes line purple and thicker than default
@@ -232,6 +236,12 @@ Figure 1.
 
 
 j) Calculate model predictions
+```{r model predictions}
+predictions <- ggpredict(model1, #the predictions function saves the output for later use
+          terms = c("edge_distance [0,900]", "season")) 
+print(predictions)
+```
+
 
 k) Interpret your results
 
