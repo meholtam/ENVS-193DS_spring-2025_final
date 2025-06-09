@@ -233,8 +233,9 @@ theme(
 
 i) Write a caption for your figure
 
-Figure 1.
-
+Figure 1. Predicted Swift Parrot Nest Box Occupancy by Edge Distance and Year
+This figure conveys the observed versus predicted nest box occupancy of Swift Parrots in 2016 and 2019. The turquoise points represent the observed occupancy as a function of distance from forest edge. The lines are shaded by the 95% confidence interval to represent predicted occupancy in 2016, represented by the purple shading, and 2019, represented by the green shading. As shown in the model, the relationship between distance from forest edge and Swift Parrot occupancy is inversely proportional, with boxes placed farther from the forest edge relating to smaller likelihood of Swift Parrot occupancy throughout both seasons. It is also clear from the model that Swift Parrot occupancy in all boxes was less in 2019 than in 2016. 
+Data Citation: https://doi.org/10.5061/dryad.83bk3j9sb 
 
 
 
