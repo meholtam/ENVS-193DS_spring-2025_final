@@ -88,11 +88,13 @@ Problem 3: Data Analysis
 a) Response variable
 In this data set, the 1s and 0s refer to whether a certain species is occupying the box, or if there is a different species/if the box is empty. The 1 in the sp column refers to the presence of a swift parrot and the 0 refers to it being occupied by a different species or being empty; the 1 in ths cs column refers to the common starling and the 0 refers to it being occupied by a different species or being empty; the 1 in the e column refers to it being unoccupied or empty and the 0 refers to it being occupied; and the 1 in the tm column refers to it being occupied by the tree martin and the 0 refers to another species.
 
+b) Purpose of study
+The target species for the nest boxes being studied in this paper is the swift parrot, where the common starling and the tree martin are non-target species that may be occupying the nest boxes. The common starling and tree martin are competitors of the swift parrot for this habitat and are the main beneficiaries of the boxes, so this study seeks to identify what factors cause greater occupancy of these competitors over the intended beneficiary, the swift parrot. 
 
+c) Difference in "seasons"
+The two years that are referred to as seasons are 2016 and 2019. The main difference between these years in the context of this study is that in 2016 the boxes were newly deployed where in 2019 they had been established and present for three years. 
 
-
-
-
+d) Table of models
 
 
 
