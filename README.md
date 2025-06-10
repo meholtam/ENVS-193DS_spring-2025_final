@@ -17,8 +17,7 @@ Code= code folder, includes FinalCode.rmd (rmd file with final code)
 
 Data = data folder, includes SST.csv, occdist.csv (sea surface temperature and nest box data.
 
-Rendered output: https://meholtam.github.io/NVS-193DS_spring-2025_final/FinalCode.html
-
+Rendered output: https://meholtam.github.io/ENVS-193DS_spring-2025_final/FinalCode.html
 
 
 
