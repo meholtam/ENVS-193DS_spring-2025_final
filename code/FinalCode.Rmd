@@ -1,12 +1,13 @@
 ---
 title: "Mary Holtam Final"
 author: "Mary Holtam"
-output: html_document
-toc: true
+date: "2025-06-08"
+output:
+  html_document:
+    toc: true
     toc_float:
       collapsed: false
       smooth_scroll: true
-date: "2025-06-08"
 ---
 
 Link to GitHub repository: https://github.com/meholtam/ENVS-193DS_spring-2025_final.git
